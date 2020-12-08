@@ -1,0 +1,114 @@
+---
+# tasks file for openvpn-server
+
+- name: Install Easy-RSA
+  apt: 
+    name: Easy-RSA
+    state: present
+    update_cache: yes
+
+- name: Install OpenVPN server
+  apt:
+    name: openvpn
+    state: present
+
+- name: Create OpenVPN public key infrastructure 
+  command: /usr/share/easy-rsa/easyrsa init-pki
+  args:
+    creates: /usr/share/easy-rsa/pki
+    chdir: /usr/share/easy-rsa
+
+- name: Generate the Certificate Authority
+  command: /usr/share/easy-rsa/easyrsa build-ca nopass
+  args: 
+    chdir: /usr/share/easy-rsa
+    creates: /usr/share/easy-rsa/pki/ca.crt
+
+- name: Generate Diffie Hellman Parameters
+  command: /usr/share/easy-rsa/easyrsa gen-dh
+  args:
+    chdir: /usr/share/easyrsa
+    creates: /etc/easy-rsa/pki/dh.pem
+
+- name: Generate OpenVPN Server Certificate and Key
+  command: /usr/share/easy-rsa/easyrsa build-server-full server nopass
+  args:
+    chdir: /usr/share/easyrsa
+    creates: /usr/share/easy-rsa/pki/issued/server.crt
+
+- name: Generate HMAC key
+  command: openvpn --genkey --secret /usr/share/easy-rsa/pki/ta.key
+  args:
+    chdir: /usr/share/easy-rsa
+    creates: /usr/share/easy-rsa/pki/ta.key
+
+- name: Generate a revocation certificate
+  command: /usr/share/easy-rsa/easyrsa gen-crl
+  args:
+    chdir: /usr/share/easy-rsa
+    creates: /usr/share/easy-rsa/pki/crl.pem
+
+- name: Creating ca.crt symlink in /etc/openvpn
+  file:
+    src: /usr/share/easy-rsa/pki/ca.crt
+    dest: /etc/openvpn/server/ca.crt
+    state: link
+
+- name: Creating crl.pem symlink in /etc/openvpn
+  file:
+    src: /usr/share/easy-rsa/pki/crl.pem
+    dest: /etc/openvpn/server/crl.pem
+    state: link
+
+- name: Creating dh.pem symlink in /etc/openvpn
+  file:
+    src: /usr/share/easy-rsa/pki/dh.pem
+    dest: /etc/openvpn/server/dh.pem
+    state: link
+
+- name: Creating ta.key symlink in /etc/openvpn
+  file:
+    src: /usr/share/easy-rsa/pki/ta.key
+    dest: /etc/openvpn/server/ta.key
+    state: link
+
+- name: Creating issued folder symlink in /etc/openvpn
+  file:
+    src: /usr/share/easy-rsa/pki/issued
+    dest: /etc/openvpn/server/issued
+    state: link
+
+- name: Creating issued folder symlink in /etc/openvpn
+  file:
+    src: /usr/share/easy-rsa/pki/private
+    dest: /etc/openvpn/server/private
+    state: link
+
+- name: Create server config file
+  template:
+    src: server.conf.j2
+    dest: /etc/openvpn/server/server.conf
+
+- name: Creating directory for scripts
+  file:
+    path: /usr/local/scripts
+    state: directory
+    mode: '0755'
+
+- name: Copy create_ccd.py script
+  template:
+    src: create_cd.py.j2
+    dest: /usr/local/scripts/create_ccd.py
+    
+- name: Copy createkey.sh
+  file:
+    src: createkey.sh
+    dest: /usr/local/scripts/createkey.sh
+    mode: '0755'
+
+- name: Creating symlink for createkey.sh to easy-rsa folder
+  file:
+    src: /usr/local/scripts/createkey.sh
+    dest: /usr/share/easy-rsa/createkey.sh
+    state: link
+

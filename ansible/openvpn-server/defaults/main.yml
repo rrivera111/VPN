@@ -1,0 +1,16 @@
+---
+# defaults file for openvpn-server
+
+#Local network that should be routed to VPN avi_network
+local_network: 172.24.0.0 255.255.0.0
+#Client configuration directory
+ccd_dir: /etc/openvpn/ccd
+#VPN subnet
+vpn_sublet: 10.10.10.0 255.255.255.0
+#IP address for Lan router in VPN network
+lan_router_ip: 10.10.10.3
+#Server protocol
+server_proto: udp
+#Server port
+server_port: 2194
+
