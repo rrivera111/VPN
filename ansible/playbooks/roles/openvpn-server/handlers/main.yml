@@ -1,0 +1,10 @@
+---
+# handlers file for openvpn-server
+
+- name: Restart OpenVPN server
+  systemd:
+    name: openvpn
+    state: restarted
+
+- name: Reload sysctl
+  command: sysctl --system

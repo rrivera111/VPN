@@ -29,7 +29,7 @@ server {{ vpn_subnet }}
 cipher AES-256-CBC
 
 #Local network
-route {{ local_network }} {{ lan_router }}
+route {{ local_network }} {{ lan_router_ip }}
 
 # connection properties
 keepalive 10 120

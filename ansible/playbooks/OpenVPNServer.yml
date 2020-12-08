@@ -1,0 +1,10 @@
+# This role was designed for OpenVPN server installation
+# Please use:
+# ansible-playbook OpenVPNServer.yml -e '{"target":"openvpn-server"}' --private-key
+---
+
+- name: Install OpenVPN
+  hosts: '{{target}}'
+
+  roles:
+    - { role: openvpn-server, become: yes }
