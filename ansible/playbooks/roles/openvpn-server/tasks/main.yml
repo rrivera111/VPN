@@ -89,10 +89,16 @@
     dest: /etc/openvpn/server/private
     state: link
 
+- name: Enable server configuration
+  replace:
+    path: /etc/default/openvpn
+    regexp: '#AUTOSTART="home office"'
+    replace: 'AUTOSTART="server"'
+
 - name: Create server config file
   template:
     src: server.conf.j2
-    dest: /etc/openvpn/server/server.conf
+    dest: /etc/openvpn/server.conf
   notify: Restart OpenVPN server
 
 - name: Creating directory for scripts
@@ -100,6 +106,17 @@
     path: /usr/local/scripts
     state: directory
     mode: '0755'
+
+- name: Creating custom configuration folder
+  file:
+    path: /etc/openvpn/ccd
+    state: directory
+    mode: '0755'
+
+- name: Copy rut950 custom config
+  template:
+    src: rut950.j2
+    dest: /etc/openvpn/ccd/rut950
 
 - name: Copy create_ccd.py script
   template:
@@ -130,5 +147,4 @@
     name: openvpn
     state: started
     enabled: yes
-    
-
+    daemon_reload: yes

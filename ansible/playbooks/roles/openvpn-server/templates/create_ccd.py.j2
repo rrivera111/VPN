@@ -33,7 +33,7 @@ sorted_ips = sorted(leased_ips)
 
 newip = long2ip(sorted_ips[-1] + 1)
 
-new_ccd_string = 'ifconfig-push ' + newip + ' 255.255.255.0\npush "route {{ local_network }}"\n'
+new_ccd_string = 'ifconfig-push ' + newip + ' 255.255.255.0\npush "route {{ local_network }} {{ local_network_mask }}"\n'
 
 new_ccd_file = join(dir, hostname)
 nf = open(new_ccd_file, "w+")

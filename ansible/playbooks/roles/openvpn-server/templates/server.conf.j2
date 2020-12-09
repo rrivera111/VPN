@@ -1,3 +1,5 @@
+mode server
+
 # server port
 port {{ server_port }}
 
@@ -6,9 +8,6 @@ proto {{ server_proto }}
 
 # server mode
 dev tun
-
-#authentication secret
-tls-auth /etc/openvpn/server/ta.key 0
 
 # root certificate
 ca /etc/openvpn/server/ca.crt
@@ -23,13 +22,13 @@ key /etc/openvpn/server/private/server.key
 dh /etc/openvpn/server/dh.pem
 
 # VPN subnet
-server {{ vpn_subnet }}
+server {{ vpn_subnet }} {{ vpn_subnet_mask }}
 
 # traffic encryption
 cipher AES-256-CBC
 
 #Local network
-route {{ local_network }} {{ lan_router_ip }}
+route {{ local_network }} {{ local_network_mask }} {{ lan_router_ip }}
 
 # connection properties
 keepalive 10 120
@@ -55,7 +54,7 @@ log /var/log/openvpn/openvpn.log
 verb 3
 
 # route
-push "route {{ vpn_subnet }}"
+push "route {{ vpn_subnet }} {{ vpn_subnet_mask }}"
 
 # topology
 topology subnet

@@ -8,3 +8,7 @@
 
 - name: Reload sysctl
   command: sysctl --system
+
+- name: Systemctl reload
+  command: systemctl daemon-reload
+  
